@@ -1,1 +1,11 @@
 {% extends 'base.html' %}
+
+{% block content %}
+<form method="POST">
+	{{form.hidden_tag()}}
+	{{form.email_of_other_user.label}} {{form.email_of_other_user}}
+	{{form.transaction_amount.label}} {{form.transaction_amount}}
+	{{form.submit()}}
+</form>
+
+{% endblock %}

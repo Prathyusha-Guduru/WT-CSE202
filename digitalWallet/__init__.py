@@ -122,6 +122,12 @@ class UpdateAmount(FlaskForm):
 	amount = IntegerField('How much will you add',validators=[DataRequired()])
 	submit = SubmitField('Add')
 
+class AddMoneyToUser(FlaskForm):
+
+	email_of_other_user = StringField('Email of user you want to add money to ',validators=[DataRequired(),Email()])
+	transaction_amount = IntegerField('Amount to be added ',validators=[DataRequired()])
+	submit = SubmitField('Add Money')
+
 #########################################
 ################## VIEWS ################
 #########################################
@@ -198,7 +204,13 @@ def add_money():
 	print(f"User has {current_user.amount}")
 	return render_template('add_money.html',form = form,current_user= current_user)
 
-@app.route('/transaction')
+@app.route('/transaction',methods = ['GET','POST'])
 def transaction():
-	return render_template('transaction.html')
+	form = AddMoneyToUser()
+	if form.validate_on_submit():
+		reciever = User.query.filter_by(email = form.email_of_other_user.data).first()
+		reciever.amount += form.transaction_amount.data
+		db.session.commit()
+	
+	return render_template('transaction.html',form = form)
 
