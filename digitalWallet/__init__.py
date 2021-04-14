@@ -210,6 +210,7 @@ def transaction():
 	if form.validate_on_submit():
 		reciever = User.query.filter_by(email = form.email_of_other_user.data).first()
 		reciever.amount += form.transaction_amount.data
+		current_user.amount = current_user.amount-form.transaction_amount.data
 		db.session.commit()
 	
 	return render_template('transaction.html',form = form)
