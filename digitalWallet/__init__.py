@@ -1,3 +1,8 @@
+#########################################
+### importing 3rd party libraries   #####
+#########################################
+
+
 from operator import imod
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +19,14 @@ from wtforms import ValidationError
 from flask_wtf.file import FileField,FileAllowed
 from flask_login import current_user
 from flask import render_template
+from flask_bcrypt import Bcrypt, check_password_hash, generate_password_hash
+
+
+
+#########################################
+################## CONFIG    ############
+#########################################
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'izzasecret'
@@ -21,11 +34,16 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
 Migrate(app,db)
 
 
-from flask_bcrypt import Bcrypt, check_password_hash, generate_password_hash
+
+
+
+#########################################
+################## DB MODELS ############
+#########################################
+
 class User(db.Model):
 	__tablename__ = 'users'
 
@@ -49,6 +67,10 @@ class User(db.Model):
 	def __repr__(self):
 		return f"Username is {self.username}"
 
+
+#########################################
+################## FORMS ################
+#########################################
 
 class LoginForm(FlaskForm):
 	email = StringField('Email',validators=[DataRequired(),Email()])
@@ -97,8 +119,9 @@ class UpdateUserForm(FlaskForm):
 def index():
 	return render_template('index.html')
 
-@app.route('/register')
+@app.route('/register',methods = ['GET','POST'])
 def register():
+
 	return render_template('register.html')
 
 @app.route('/login')
