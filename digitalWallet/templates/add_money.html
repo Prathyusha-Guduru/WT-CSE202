@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<form method="POST">
+	{{form.hidden_tag()}}
+	{{form.amount.label}} {{form.amount}}
+	<h2>You have $ {{current_user.amount}} in your account</h2>
+	{{form.submit()}}
+</form>
 
 {% endblock %}

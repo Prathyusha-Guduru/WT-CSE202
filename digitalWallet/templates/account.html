@@ -1,4 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Welcome {{current_user.username}}</h2>
+<div align='center'>
+	<h1>Welcome, {{current_user.username}}</h1>
+	<img src="/static/images/default.png" alt="" width="200">
+	<div class="container">
+		<form method="POST" action="" enctype="multipart/form-data">
+			{{form.hidden_tag()}}
+			{{form.email.label}} {{form.email}} <br>
+			{{form.username.label}} {{form.username}} <br>
+			{{form.picture.label}} {{form.picture}} <br>
+			<p>You have $ {{current_user.amount}} in your wallet 📂</p>
+			{{form.submit()}}
+		</form>
+	</div>
+
+</div>
+
 {% endblock %}
