@@ -4,7 +4,7 @@
 
 
 from operator import imod
-from flask import Flask
+from flask import Flask,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_migrate import Migrate
@@ -54,10 +54,11 @@ class User(db.Model):
 	password_hash = db.Column(db.String(128))
 	amount = db.Column(db.Integer,default = 0)
 
-	def __init__(self,email,username,password):
+	def __init__(self,email,username,password,amount):
 		self.email = email
 		self.username = username
 		self.password_hash = generate_password_hash(password)
+		self.amount = amount
 	def check_password(self,password):
 		return check_password_hash(self.password_hash,password)
 
@@ -121,8 +122,14 @@ def index():
 
 @app.route('/register',methods = ['GET','POST'])
 def register():
-
-	return render_template('register.html')
+	form = RegistrationForm()
+	if form.validate_on_submit():
+			user = User(email = form.email.data,username=form.username.data,password=form.password.data,amount = form.amount.data)
+			db.session.add(user)
+			db.session.commit()
+			flash("Thanks for registration")
+			return redirect(url_for('login'))
+	return render_template('register.html',form = form)
 
 @app.route('/login')
 def login():
