@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_migrate import Migrate
 from flask_login import LoginManager,UserMixin
-from flask_login.utils import login_required,login_user,current_user
+from flask_login.utils import login_required,login_user,current_user,logout_user
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import _FlaskFormCSRF
 from wtforms import StringField,PasswordField,SubmitField
@@ -152,6 +152,11 @@ def login():
 			# 	next = url_for('account')
 			return redirect(url_for('account'))
 	return render_template('login.html',form= form)
+
+@app.route('/logout')
+def logout():
+	logout_user()
+	return redirect(url_for('index'))
 
 @app.route('/account')
 def account():
