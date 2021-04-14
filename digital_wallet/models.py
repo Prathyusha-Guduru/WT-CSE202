@@ -1,4 +1,4 @@
-from digital_wallet import db,login_manager
+from digital_wallet import db, login_manager
 from flask_bcrypt import Bcrypt, check_password_hash, generate_password_hash
 class User(db.Model):
 	__tablename__ = 'users'
