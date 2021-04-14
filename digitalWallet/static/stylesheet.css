@@ -1,0 +1,20 @@
+body{
+	overflow-x: hidden;
+}
+
+.home-img{
+	position: relative;
+	top: 50px;
+}
+
+.heading{
+	font-size: 150px;
+	font-weight: 800;
+}
+
+.home-text{
+	
+	position: relative;
+	right: 100px;
+}
+
