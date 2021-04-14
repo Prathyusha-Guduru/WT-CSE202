@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired,Email,EqualTo
 from wtforms import ValidationError
 from flask_wtf.file import FileField,FileAllowed
 from flask_login import current_user
+from flask import render_template
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'izzasecret'
@@ -86,3 +87,29 @@ class UpdateUserForm(FlaskForm):
 	def check_username(self,field):
 		if User.query.filter_by(username = field.data).first():
 			raise ValidationError('Username has been registered already ')
+
+
+#########################################
+################## VIEWS ################
+#########################################
+
+@app.route('/')
+def index():
+	return render_template('index.html')
+
+@app.route('/register')
+def register():
+	return render_template('register.html')
+
+@app.route('/login')
+def login():
+	return render_template('login.html')
+
+@app.route('/add_money')
+def add_money():
+	return render_template('add_money.html')
+
+@app.route('/transaction')
+def transaction():
+	return render_template('transaction.html')
+
