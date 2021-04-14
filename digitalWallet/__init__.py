@@ -4,12 +4,12 @@
 
 
 from operator import imod
-from flask import Flask,redirect,url_for,flash
+from flask import Flask,redirect,url_for,flash,request
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_migrate import Migrate
-from flask_login import LoginManager
-from flask_login.utils import login_required
+from flask_login import LoginManager,UserMixin
+from flask_login.utils import login_required,login_user,current_user
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import _FlaskFormCSRF
 from wtforms import StringField,PasswordField,SubmitField
@@ -35,6 +35,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'dat
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 Migrate(app,db)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
 
@@ -43,8 +46,10 @@ Migrate(app,db)
 #########################################
 ################## DB MODELS ############
 #########################################
-
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+	return User.query.get(user_id)
+class User(db.Model,UserMixin):
 	__tablename__ = 'users'
 
 	id = db.Column(db.Integer,primary_key = True)
@@ -83,7 +88,7 @@ class RegistrationForm(FlaskForm):
 	username = StringField('Username',validators=[DataRequired()])
 	password = PasswordField('Password',validators=[DataRequired(),EqualTo('pass_confirm',message='Passwords must match')])
 	pass_confirm = PasswordField('Conifirm Password',validators=[DataRequired()])
-	amount = IntegerField('How much amount do ou want to add',validators=[DataRequired()])
+	amount = IntegerField('Amount to wallet',validators=[DataRequired()])
 	submit = SubmitField('Register')
 
 	def check_email(self,field):
@@ -131,9 +136,26 @@ def register():
 			return redirect(url_for('login'))
 	return render_template('register.html',form = form)
 
-@app.route('/login')
+@app.route('/login',methods = ['GET','POST'])
 def login():
-	return render_template('login.html')
+	form = LoginForm()
+	if form.validate_on_submit():
+		user = User.query.filter_by(email = form.email.data).first()
+
+		if user.check_password(form.password.data) and user is not None:
+			login_user(user)
+			flash('Log In Success')
+
+			next = request.args.get('next')
+			print(current_user.username)
+			# if next == None or not next[0] == '/0':
+			# 	next = url_for('account')
+			return redirect(url_for('account'))
+	return render_template('login.html',form= form)
+
+@app.route('/account')
+def account():
+	return render_template('account.html',current_user = current_user)
 
 @app.route('/add_money')
 def add_money():
